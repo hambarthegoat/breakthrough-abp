@@ -13,7 +13,13 @@ class MoveValidator:
 
         moves = []
 
-        direction = 1 if piece == GameState.WHITE else -1
+        # Determine direction based on board orientation
+        if hasattr(state, 'human_player') and state.human_player == GameState.WHITE:
+            # White at bottom (rows 6-7), moves up (decreasing row)
+            direction = -1 if piece == GameState.WHITE else 1
+        else:
+            # White at top (rows 0-1), moves down (increasing row)
+            direction = 1 if piece == GameState.WHITE else -1
         new_row = row + direction
 
         if state.is_valid_position(new_row, col):

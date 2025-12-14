@@ -21,6 +21,7 @@ class GameState:
         self.current_player = self.WHITE
         self.winner = None
         self.move_history = []
+        self.human_player = None  # Track board orientation
 
     def get_piece(self, row: int, col: int) -> int:
         if self.is_valid_position(row, col):
@@ -56,6 +57,7 @@ class GameState:
         new_state.current_player = self.current_player
         new_state.winner = self.winner
         new_state.move_history = self.move_history.copy()
+        new_state.human_player = self.human_player
         return new_state
 
     def count_pieces(self, player: int) -> int:

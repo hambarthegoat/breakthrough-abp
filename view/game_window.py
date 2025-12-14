@@ -100,23 +100,27 @@ class GameWindow(QMainWindow):
         settings_group.setStyleSheet(StyleSheets.GROUP_BOX)
 
         settings_layout = QVBoxLayout()
+        settings_layout.setSpacing(10)
+        settings_layout.setContentsMargins(15, 20, 15, 20)
 
-        depth_label = QLabel("Search Depth: 3")
-        depth_label.setStyleSheet("color: #D0D0D0; font-size: 13px;")
-        settings_layout.addWidget(depth_label)
+        # Difficulty level label
+        difficulty_label = QLabel("Difficulty:")
+        difficulty_label.setStyleSheet("color: #A0A0A0; font-size: 14px;")
+        settings_layout.addWidget(difficulty_label)
 
-        self.depth_slider = QSlider(Qt.Orientation.Horizontal)
-        self.depth_slider.setStyleSheet(StyleSheets.SLIDER)
-        self.depth_slider.setMinimum(1)
-        self.depth_slider.setMaximum(5)
-        self.depth_slider.setValue(3)
+        # Main difficulty display
+        self.depth_label = QLabel("Medium")
+        self.depth_label.setStyleSheet(
+            "color: #FFB347; font-size: 24px; font-weight: bold; padding: 10px;"
+        )
+        self.depth_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        settings_layout.addWidget(self.depth_label)
 
-        def on_depth_changed(value):
-            depth_label.setText(f"Search Depth: {value}")
-            self.depth_changed.emit(value)
-
-        self.depth_slider.valueChanged.connect(on_depth_changed)
-        settings_layout.addWidget(self.depth_slider)
+        # Search depth info
+        self.depth_info = QLabel("Search Depth: 3")
+        self.depth_info.setStyleSheet("color: #808080; font-size: 13px; padding: 5px;")
+        self.depth_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        settings_layout.addWidget(self.depth_info)
 
         settings_group.setLayout(settings_layout)
 

@@ -63,6 +63,8 @@ class MetricsPanel(QWidget):
     def _create_metric_label(self, title: str, value: str) -> QLabel:
         label = QLabel(f"{title}\n  {value}")
         label.setStyleSheet(StyleSheets.METRIC_LABEL)
+        label.setWordWrap(False)
+        label.setMinimumHeight(45)
         return label
 
     def update_metrics(self, metrics: dict):

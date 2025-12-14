@@ -96,9 +96,10 @@ class StyleSheets:
         QLabel {
             font-size: 13px;
             color: #D0D0D0;
-            padding: 5px;
+            padding: 8px;
             background-color: #404045;
             border-radius: 4px;
+            line-height: 1.6;
         }
     """
 

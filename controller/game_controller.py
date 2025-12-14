@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QMessageBox
 
 from controller.ai_controller import AIController
 from model import GameRules, GameState, MoveValidator
-from view import GameWindow
+from view import GameWindow, DifficultyDialog
 
 
 class GameController:
@@ -30,14 +30,22 @@ class GameController:
 
         self.window.new_game_requested.connect(self._start_new_game)
 
-        self.window.depth_changed.connect(self._on_depth_changed)
-
     def show(self):
         self.window.show()
 
     def _start_new_game(self):
-        self.game_state = GameState()
-
+        # Show difficulty selection dialog
+        dialog = DifficultyDialog(self.window)
+        if dialog.exec():
+            self.ai_depth = dialog.get_selected_depth()
+            self._update_difficulty_display()
+        else:
+            # If dialog was cancelled, don't start a new game
+            if not self.game_started:
+                # If this is the first game and user cancelled, close the application
+                self.window.close()
+            return
+        
         self.selected_piece = None
         self.game_started = True
 
@@ -46,13 +54,17 @@ class GameController:
             self.ai_player = GameState.BLACK
             self.window.set_info_text("You are White. Your turn!")
             self.window.metrics_panel.set_status("Your Turn", "#90EE90")
-            GameRules.setup_initial_position(self.game_state, self.human_player)
         else:
             self.human_player = GameState.BLACK
             self.ai_player = GameState.WHITE
             self.window.set_info_text("You are Black. AI goes first...")
             self.window.metrics_panel.set_status("AI Thinking...", "#FFB347")
-            GameRules.setup_initial_position(self.game_state, self.human_player)
+        
+        self.game_state = GameState()
+        GameRules.setup_initial_position(self.game_state, self.human_player)
+        self.game_state.human_player = self.human_player
+        
+        if self.human_player == GameState.BLACK:
             QTimer.singleShot(500, self._trigger_ai_move)
 
         self.window.board_view.update_board(self.game_state.board)
@@ -157,5 +169,23 @@ class GameController:
         msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
         msg_box.exec()
 
-    def _on_depth_changed(self, depth: int):
-        self.ai_depth = depth
+    def _update_difficulty_display(self):
+        """Update the difficulty display based on current AI depth"""
+        if self.ai_depth == 1:
+            difficulty_name = "Easy"
+            difficulty_color = "#90EE90"
+        elif self.ai_depth == 3:
+            difficulty_name = "Medium"
+            difficulty_color = "#FFB347"
+        elif self.ai_depth == 5:
+            difficulty_name = "Hard"
+            difficulty_color = "#FF6B6B"
+        else:
+            difficulty_name = f"Custom"
+            difficulty_color = "#D0D0D0"
+        
+        self.window.depth_label.setText(difficulty_name)
+        self.window.depth_label.setStyleSheet(
+            f"color: {difficulty_color}; font-size: 24px; font-weight: bold; padding: 10px;"
+        )
+        self.window.depth_info.setText(f"Search Depth: {self.ai_depth}")
